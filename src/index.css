@@ -1,0 +1,442 @@
+@import 'tailwindcss';
+@import 'lenis/dist/lenis.css';
+
+/* --------------------------------------------------------------------------
+   Design tokens
+   Taken from the reference design (deep green bands, white and cream
+   surfaces, serif-italic accent word) and the green/cream system it shares
+   with the Starbucks reference in the design catalog.
+   Gold is reserved for the "Partner college" badge only.
+   -------------------------------------------------------------------------- */
+@theme {
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+
+  --color-forest-950: #142a23;
+  --color-forest-900: #1d3a31;
+  --color-forest-800: #24473c;
+  --color-forest-700: #2e5a4c;
+  --color-forest-600: #3a6c5c;
+  --color-forest-500: #4f8574;
+  --color-forest-200: #c9ded4;
+  --color-forest-100: #e3eee8;
+  --color-forest-50: #f1f6f3;
+
+  --color-cream: #f6f4ef;
+  --color-ink: #17211c;
+  --color-muted: #56615b;
+  --color-line: #e2e6e3;
+  --color-gold: #b88a3e;
+  --color-gold-soft: #f7efdf;
+  --color-chart: #2a8560; /* bar marks in the admin; passes the dataviz palette checks */
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+
+  --radius-card: 1.25rem;
+  --radius-photo: 1.75rem;
+
+  --shadow-soft: 0 1px 2px rgb(20 42 35 / 0.06), 0 8px 24px -12px rgb(20 42 35 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(20 42 35 / 0.06), 0 24px 48px -20px rgb(20 42 35 / 0.32);
+
+  --animate-marquee: marquee 40s linear infinite;
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    background: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--color-forest-200);
+    color: var(--color-forest-950);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-forest-600);
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: #fff;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  img {
+    max-width: 100%;
+  }
+  /* Native number inputs: no spinner clutter in forms. */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 40rem) {
+    .container-page {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .container-page {
+      padding-inline: 2.5rem;
+    }
+  }
+  /* Single-column page grids may shrink below their content (wide tables
+     scroll inside .table-wrap instead of pushing the page sideways).
+     lg:grid-cols-* utilities still win: utilities sit in a later layer. */
+  .container-page.grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    background: var(--color-forest-900);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: top 0.15s;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  /* The serif-italic accent word, as in the reference ("into Achievement"). */
+  .accent {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--color-forest-600);
+  }
+  .on-dark .accent {
+    color: var(--color-forest-200);
+  }
+
+  /* Pill label above section headings ("Why Choose Us", "FAQ"). */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-line);
+    background: #fff;
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-forest-800);
+  }
+  .eyebrow::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: var(--color-forest-600);
+  }
+  .on-dark .eyebrow {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.18);
+    color: #fff;
+  }
+  .on-dark .eyebrow::before {
+    background: var(--color-forest-200);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.875rem;
+    padding: 0.7rem 1.35rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1.2;
+    max-width: 100%;
+    text-align: center;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s,
+      transform 0.15s;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-primary {
+    background: var(--color-forest-800);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--color-forest-700);
+  }
+  .btn-light {
+    background: #fff;
+    color: var(--color-forest-900);
+  }
+  .btn-light:hover {
+    background: var(--color-forest-50);
+  }
+  .btn-soft {
+    background: var(--color-forest-50);
+    color: var(--color-forest-900);
+    border: 1px solid var(--color-line);
+  }
+  .btn-soft:hover {
+    background: var(--color-forest-100);
+  }
+  .btn-outline-light {
+    color: #fff;
+    border: 1px solid rgb(255 255 255 / 0.35);
+  }
+  .btn-outline-light:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+  .btn-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-right: -0.6rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-forest-900);
+  }
+  .btn-light .btn-icon,
+  .btn-soft .btn-icon {
+    background: var(--color-forest-800);
+    color: #fff;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.375rem;
+    color: var(--color-ink);
+  }
+  .field {
+    width: 100%;
+    min-height: 2.875rem;
+    border: 1px solid #cfd6d2;
+    border-radius: 0.75rem;
+    background: #fff;
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem;
+    color: var(--color-ink);
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .field:hover {
+    border-color: #9fb0a8;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-forest-600);
+    box-shadow: 0 0 0 3px rgb(58 108 92 / 0.2);
+  }
+  .field[aria-invalid='true'] {
+    border-color: var(--color-danger);
+    background: var(--color-danger-soft);
+  }
+  .field-error {
+    margin-top: 0.375rem;
+    font-size: 0.8125rem;
+    color: var(--color-danger);
+    font-weight: 500;
+  }
+  select.field {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2356615b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    padding-right: 2.5rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .badge-partner {
+    background: var(--color-gold-soft);
+    color: #7a5717;
+    border: 1px solid #ead7b0;
+  }
+
+  /* Tables: wide tables scroll inside their own box on phones. */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+    background: #fff;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .data-table th,
+  .data-table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-line);
+    white-space: nowrap;
+  }
+  .data-table thead th {
+    background: var(--color-forest-50);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-forest-900);
+  }
+  .data-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .data-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Prose for guide pages and legal text. */
+  .prose-guide > * + * {
+    margin-top: 1rem;
+  }
+  .prose-guide h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+  }
+  .prose-guide h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-top: 1.75rem;
+  }
+  .prose-guide p,
+  .prose-guide li {
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+  .prose-guide ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  .prose-guide ul > li + li {
+    margin-top: 0.4rem;
+  }
+  .prose-guide a {
+    color: var(--color-forest-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* SpotlightCard (React Bits), see components/bits/SpotlightCard.jsx */
+  .spotlight-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .spotlight-card__light,
+  .spotlight-card__grain,
+  .spotlight-card__border,
+  .spotlight-card__edge {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .spotlight-card__light,
+  .spotlight-card__grain {
+    z-index: -1;
+    opacity: 0;
+  }
+  .spotlight-card__grain {
+    background-size: 160px 160px;
+    mix-blend-mode: overlay;
+  }
+  .spotlight-card__border,
+  .spotlight-card__edge {
+    z-index: 1;
+    padding: 1px;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+  .spotlight-card__border {
+    background: var(--color-line);
+  }
+  .spotlight-card__edge {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: no marquee, no smooth transitions beyond colour. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
