@@ -287,8 +287,10 @@ function LeadDrawer({ lead, onClose, onChange, onDelete }) {
 
   useEffect(() => {
     const dialog = ref.current;
-    dialog?.showModal();
-    return () => dialog?.close();
+    // Open once. Don't close() in a cleanup: that fires onClose and would shut
+    // the panel straight away in React's development double-run. Unmounting
+    // removes the dialog anyway.
+    if (dialog && !dialog.open) dialog.showModal();
   }, []);
 
   const details = [

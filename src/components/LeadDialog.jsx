@@ -22,6 +22,14 @@ const COPY = {
     title: 'Get the study abroad guide',
     text: 'Country-by-country costs, NMC-compliant universities for MBBS, and a call with our abroad counsellor.',
   }),
+  neet_calculator: () => ({
+    title: 'Get a college list for your score',
+    text: 'We’ll match your NEET score and category against last year’s cutoffs and send you a realistic list of colleges and quotas.',
+  }),
+  stories: () => ({
+    title: 'Talk to a family we’ve guided',
+    text: 'Tell us about the student and we’ll connect you with a parent or student from a similar background, with their permission.',
+  }),
   career: () => ({
     title: 'Book a career guidance session',
     text: 'The first session is free. Tell us where the student is now and a counsellor will WhatsApp you to fix a time.',
@@ -116,6 +124,7 @@ export default function LeadDialog() {
                 source={request.source}
                 college={request.college}
                 defaultInterest={request.interest}
+                defaultScoreNote={request.scoreNote}
                 submitLabel={request.college ? 'Show me the fees' : undefined}
                 onSuccess={(values) => {
                   markSent(values.full_name);

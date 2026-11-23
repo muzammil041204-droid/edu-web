@@ -16,6 +16,7 @@ export const NAV = [
   { to: '/career-guidance', label: 'Career Guidance' },
   { label: 'Admissions', children: ADMISSIONS },
   { to: '/colleges', label: 'Colleges' },
+  { to: '/student-stories', label: 'Stories' },
   { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
 ];

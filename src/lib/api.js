@@ -28,6 +28,11 @@ export const saveCollege = call('saveCollege');
 export const saveFees = call('saveFees');
 export const resetDemo = call('resetDemo');
 
+export const listTestimonials = call('listTestimonials');
+export const adminListTestimonials = call('adminListTestimonials');
+export const saveTestimonial = call('saveTestimonial');
+export const deleteTestimonial = call('deleteTestimonial');
+
 // Live lead updates. Returns an unsubscribe function straight away.
 export function subscribeLeads(onChange) {
   let unsubscribe = () => {};

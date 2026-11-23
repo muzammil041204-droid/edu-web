@@ -78,48 +78,138 @@ export const steps = [
   },
 ];
 
-export const testimonials = [
+// Sample "Voices of our students": reviews and video stories. The admin panel
+// manages these (Reviews & videos). Videos only appear on the site once they
+// have a YouTube link, so the samples below start without one.
+export const sampleStories = [
   {
+    kind: 'review',
     title: 'Got Stanley in round 2',
     quote:
       'We were sure our son had missed out after round 1. The team told us not to take the private seat and to wait. He got Stanley Medical College in round 2.',
     name: 'Revathi Sundaram',
     detail: 'Parent · Chennai · NEET 2026',
-    featured: true,
+    rating: 5,
+    stream: 'medical',
+    is_featured: true,
   },
   {
+    kind: 'review',
     title: 'CEG through TNEA',
     quote:
       'Her cutoff was 198.5. They showed us exactly which branches at Guindy were realistic and she got ECE in round 1.',
     name: 'Ganesh Iyer',
     detail: 'Parent · Chennai · TNEA 2026',
+    rating: 5,
+    stream: 'engineering',
+    is_featured: true,
   },
   {
+    kind: 'review',
     title: 'The career test changed our plan',
     quote:
       'Everyone said engineering. The aptitude report and two sessions pointed to architecture. I’m now in B.Arch and I love it.',
     name: 'Nandhini Ravi',
     detail: 'B.Arch student · Coimbatore',
+    rating: 5,
+    stream: 'career',
+    is_featured: true,
   },
   {
+    kind: 'review',
     title: 'The 7.5% quota explained',
     quote: 'Nobody in our village knew how the government-school quota worked. They checked every certificate.',
     name: 'Karthik Murugan',
     detail: 'MBBS student · Tirunelveli',
+    rating: 5,
+    stream: 'medical',
+    is_featured: true,
   },
   {
+    kind: 'review',
     title: 'JoSAA rounds made simple',
     quote: 'Six rounds, float, slide, freeze… they explained it in Tamil to my parents. I’m at NIT Trichy.',
     name: 'Arjun Prakash',
     detail: 'B.Tech student · Tiruchirappalli',
+    rating: 5,
+    stream: 'engineering',
+    is_featured: true,
   },
   {
+    kind: 'review',
     title: 'Georgia, done properly',
     quote: 'They only suggested NMC-compliant universities and helped with the visa. My daughter is in her third year.',
     name: 'Selvi Rajendran',
     detail: 'Parent · Salem',
+    rating: 5,
+    stream: 'abroad',
+    is_featured: true,
+  },
+  {
+    kind: 'review',
+    title: 'Group choice in Class 10',
+    quote:
+      'My son wanted Computer Science only because his friends did. After the assessment he chose Bio-Maths, and now he is preparing for NEET with real interest.',
+    name: 'Lakshmi Narayanan',
+    detail: 'Parent · Madurai · Class 11',
+    rating: 5,
+    stream: 'career',
+  },
+  {
+    kind: 'review',
+    title: 'Honest about fees',
+    quote:
+      'They showed us the full four-year cost, hostel included, before we decided. No surprises in the first year.',
+    name: 'Fathima Nasreen',
+    detail: 'Parent · Coimbatore',
+    rating: 4,
+    stream: 'engineering',
+  },
+  {
+    kind: 'review',
+    title: 'Answered every call',
+    quote: 'During counselling we called almost every day. Someone always picked up, even on Sundays.',
+    name: 'Mohammed Irfan',
+    detail: 'Parent · Tiruchirappalli',
+    rating: 5,
+    stream: 'medical',
+  },
+  {
+    kind: 'video',
+    title: 'How we chose between NIT and VIT',
+    name: 'Divya Lakshmi',
+    detail: 'B.Tech student · NIT Tiruchirappalli',
+    stream: 'engineering',
+    video_url: '',
+    is_featured: true,
+  },
+  {
+    kind: 'video',
+    title: 'From a government school to MBBS',
+    name: 'Karthik Murugan',
+    detail: 'MBBS student · Tirunelveli',
+    stream: 'medical',
+    video_url: '',
+    is_featured: true,
+  },
+  {
+    kind: 'video',
+    title: 'Third year in Tbilisi: what it is really like',
+    name: 'Anitha Selvi',
+    detail: 'MBBS student · Georgia',
+    stream: 'abroad',
+    video_url: '',
+    is_featured: true,
   },
 ];
+
+export const STORY_STREAMS = {
+  general: 'General',
+  career: 'Career guidance',
+  medical: 'Medical',
+  engineering: 'Engineering',
+  abroad: 'Study abroad',
+};
 
 export const updates = [
   { date: '2026-11-20', title: 'MCC special stray round: results out, 411 MBBS seats still vacant', tag: 'Medical' },

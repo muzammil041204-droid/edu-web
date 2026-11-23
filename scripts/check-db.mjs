@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
 import { colleges, fees } from '../src/data/colleges.js';
+import { sampleStories } from '../src/data/content.js';
 
 const root = process.argv[2] ?? fileURLToPath(new URL('..', import.meta.url));
 const db = new PGlite();
@@ -54,12 +55,19 @@ const migration = readFileSync(`${root}/supabase/migrations/0001_schema.sql`, 'u
   '-- (pg_cron stand-in already created)'
 );
 const seed = readFileSync(`${root}/supabase/seed.sql`, 'utf8');
+const voices = readFileSync(`${root}/supabase/migrations/0002_voices_and_tools.sql`, 'utf8');
 
 console.log('Schema and seed');
 await check('migration runs', () => db.exec(migration));
 await check('migration runs again (re-runnable)', () => db.exec(migration));
 await check('seed runs', () => db.exec(seed));
 await check('seed runs again (re-runnable)', () => db.exec(seed));
+await check('0002 (reviews & videos) runs', () => db.exec(voices));
+await check('0002 runs again without duplicating samples', async () => {
+  await db.exec(voices);
+  const { rows } = await db.query('select count(*)::int n from testimonials');
+  if (rows[0].n !== sampleStories.length) throw new Error(`${rows[0].n} rows`);
+});
 await check(`${colleges.length} colleges, ${fees.length} fees, cutoffs loaded`, async () => {
   const { rows } = await db.query(
     `select (select count(*) from colleges)::int c, (select count(*) from college_fees)::int f, (select count(*) from cutoffs)::int k`
@@ -155,6 +163,26 @@ await as('anon', null, async () => {
     if (r.rows.length) throw new Error('updated rows');
   });
   await check('cannot add itself as admin', () => expectError(`insert into admins values ('${USER}')`));
+  await check('reads published reviews and videos, but not hidden ones', async () => {
+    await db.exec('reset role');
+    await db.exec(`update testimonials set is_published = false where name = 'Mohammed Irfan'`);
+    await db.exec('set role anon');
+    const { rows } = await db.query('select count(*)::int n from testimonials');
+    if (rows[0].n !== sampleStories.length - 1) throw new Error(`${rows[0].n}`);
+  });
+  await check('cannot add a review', () =>
+    expectError(
+      `insert into testimonials (kind, name, quote) values ('review', 'Fake Person', 'Best agency ever, five stars')`
+    )
+  );
+  await check('cannot edit or delete reviews (0 rows)', async () => {
+    const a = await db.query(`update testimonials set rating = 1 returning id`).catch(() => ({ rows: [] }));
+    const b = await db.query(`delete from testimonials returning id`).catch(() => ({ rows: [] }));
+    if (a.rows.length || b.rows.length) throw new Error('changed rows');
+  });
+  await check('NEET calculator leads are accepted', () =>
+    submit(lead({ source: 'neet_calculator', phone: '9876500008' }))
+  );
   await check('rejects a bad phone number', () =>
     submit(lead({ phone: '12345' })).then(
       () => {
@@ -227,9 +255,9 @@ await as('authenticated', USER, async () => {
 
 console.log('Admin');
 await as('authenticated', ADMIN, async () => {
-  await check('reads all leads (5 real, spam dropped)', async () => {
+  await check('reads all leads (6 real, spam dropped)', async () => {
     const { rows } = await db.query('select whatsapp, email from leads');
-    if (rows.length !== 5) throw new Error(`${rows.length}`);
+    if (rows.length !== 6) throw new Error(`${rows.length}`);
     if (rows[0].email !== 'test@example.com') throw new Error('email not lower-cased');
   });
   await check('sees the hidden college', async () => {
@@ -248,12 +276,28 @@ await as('authenticated', ADMIN, async () => {
   );
   await check('updates a lead status', async () => {
     const { rows } = await db.query(`update leads set status = 'contacted' returning id`);
-    if (rows.length !== 5) throw new Error(`${rows.length}`);
+    if (rows.length !== 6) throw new Error(`${rows.length}`);
   });
   await check('rejects an unknown status', () => expectError(`update leads set status = 'paid'`));
   await check('deletes a lead', async () => {
     const { rows } = await db.query(`delete from leads where id = (select id from leads limit 1) returning id`);
     if (rows.length !== 1) throw new Error('not deleted');
+  });
+  await check('adds a video with a YouTube link', async () => {
+    const { rows } = await db.query(
+      `insert into testimonials (kind, name, title, video_url, stream) values ('video', 'Test Student', 'My first year', 'https://youtu.be/abcdefghijk', 'medical') returning id`
+    );
+    if (rows.length !== 1) throw new Error('not added');
+  });
+  await check('rejects a review with no words', () =>
+    expectError(`insert into testimonials (kind, name, quote) values ('review', 'Someone', '')`)
+  );
+  await check('rejects a 6-star rating', () => expectError(`update testimonials set rating = 6 where kind = 'review'`));
+  await check('sees hidden reviews, can hide and delete', async () => {
+    const all = await db.query('select count(*)::int n from testimonials');
+    if (all.rows[0].n !== sampleStories.length + 1) throw new Error(`${all.rows[0].n}`);
+    const del = await db.query(`delete from testimonials where name = 'Test Student' returning id`);
+    if (del.rows.length !== 1) throw new Error('not deleted');
   });
 });
 

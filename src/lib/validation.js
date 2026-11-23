@@ -50,6 +50,8 @@ export const SOURCES = {
   abroad: 'Study abroad guide',
   seminar: 'Seminar sign-up',
   cta: 'Bottom banner',
+  neet_calculator: 'NEET score calculator',
+  stories: 'Student stories page',
 };
 
 export const normaliseWhatsapp = (value = '') => value.replace(/\D/g, '').replace(/^(91|0)(?=\d{10}$)/, '');

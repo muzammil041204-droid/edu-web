@@ -26,6 +26,7 @@ export default function LeadForm({
   source = 'hero',
   college = null,
   defaultInterest = '',
+  defaultScoreNote = '',
   submitLabel,
   onSuccess,
   compact = false,
@@ -35,7 +36,8 @@ export default function LeadForm({
   const [values, setValues] = useState(() => ({
     ...EMPTY,
     interest: defaultInterest || college?.stream || '',
-    stage: college ? 'after_12' : '',
+    stage: college || defaultScoreNote ? 'after_12' : '',
+    score_note: defaultScoreNote,
   }));
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle'); // idle | sending | error

@@ -1,5 +1,6 @@
 import { CheckCircle2, ExternalLink } from 'lucide-react';
 import AnimatedContent from '../components/bits/AnimatedContent.jsx';
+import NeetCalculator from '../components/NeetCalculator.jsx';
 import PageHeader from '../components/PageHeader.jsx';
 import { Button, ButtonLink } from '../components/ui.jsx';
 import { medicalDates, medicalDocuments, updates } from '../data/content.js';
@@ -60,9 +61,44 @@ export default function Medical() {
         title="How medical admission works"
         accent="in India"
         text="NEET decides who qualifies. Counselling decides which college you get. Here is the whole system in plain words, with the Tamil Nadu rules that most families miss."
-      />
+      >
+        <div className="mt-8 flex flex-wrap gap-3">
+          <ButtonLink href="#neet-calculator" icon={false}>
+            Calculate your NEET score
+          </ButtonLink>
+          <ButtonLink to="/colleges?stream=medical" variant="soft">
+            Medical colleges & fees
+          </ButtonLink>
+        </div>
+      </PageHeader>
 
-      <section className="pb-16">
+      <section id="neet-calculator" className="scroll-mt-28 bg-cream py-16 sm:py-20">
+        <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <span className="eyebrow">Free tool</span>
+            <h2 className="mt-4 text-2xl font-bold sm:text-3xl">
+              Work out your <span className="accent">NEET score</span>
+            </h2>
+            <p className="mt-3 text-muted">
+              Check your answers against the official answer key, then enter how many you got right and wrong in each
+              subject. All 180 questions are compulsory: 45 each in Physics, Chemistry, Botany and Zoology.
+            </p>
+            <ul className="mt-6 space-y-3">
+              {['Correct answer: +4 marks', 'Wrong answer: −1 mark', 'Not answered: 0 marks', 'Maximum score: 720'].map(
+                (rule) => (
+                  <li key={rule} className="flex gap-3">
+                    <CheckCircle2 size={19} className="mt-0.5 shrink-0 text-forest-600" aria-hidden="true" />
+                    {rule}
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+          <NeetCalculator />
+        </div>
+      </section>
+
+      <section className="py-16">
         <div className="container-page">
           <h2 className="text-2xl font-bold sm:text-3xl">Two counselling systems</h2>
           <p className="mt-3 max-w-2xl text-muted">

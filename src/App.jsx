@@ -18,6 +18,7 @@ import Home from './pages/Home.jsx';
 import { Privacy, Terms } from './pages/Legal.jsx';
 import Medical from './pages/Medical.jsx';
 import NotFound from './pages/NotFound.jsx';
+import StudentStories from './pages/StudentStories.jsx';
 import StudyAbroad from './pages/StudyAbroad.jsx';
 
 // The admin panel is a separate bundle: visitors never download it.
@@ -54,6 +55,7 @@ export default function App() {
               <Route path="/study-abroad" element={<StudyAbroad />} />
               <Route path="/mbbs-in-india" element={<Navigate to="/medical" replace />} />
               <Route path="/mbbs-abroad" element={<Navigate to="/study-abroad" replace />} />
+              <Route path="/student-stories" element={<StudentStories />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<Privacy />} />

@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   ArrowUpRight,
+  Calculator,
   CalendarDays,
   CheckCircle2,
   Clock,
@@ -8,7 +9,6 @@ import {
   Compass,
   Globe2,
   MapPin,
-  Star,
   Stethoscope,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -21,12 +21,13 @@ import SplitText from '../components/bits/SplitText.jsx';
 import SpotlightCard from '../components/bits/SpotlightCard.jsx';
 import CollegeCard from '../components/CollegeCard.jsx';
 import CountUp from '../components/CountUp.jsx';
+import { RatingSummary, ReviewCard, VideoGrid } from '../components/Stories.jsx';
 import { Button, ButtonLink, ErrorBlock, LoadingBlock, Photo, SectionHeading } from '../components/ui.jsx';
 import { stages } from '../data/careers.js';
-import { event, faqs, otherCourses, services, steps, testimonials, updates } from '../data/content.js';
+import { event, faqs, otherCourses, services, steps, updates } from '../data/content.js';
 import { photos, stats } from '../data/site.js';
-import { listColleges } from '../lib/api.js';
-import { dateLabel, initials } from '../lib/format.js';
+import { listColleges, listTestimonials } from '../lib/api.js';
+import { dateLabel } from '../lib/format.js';
 import { gsap, MOTION_OK, useGSAP } from '../lib/gsap.js';
 import { useLead } from '../lib/leadContext.jsx';
 import { useAsync, useTitle } from '../lib/useAsync.js';
@@ -57,7 +58,7 @@ export default function Home() {
       <Process />
       <FeeReality />
       <EventBanner />
-      <Testimonials />
+      <Voices />
       <Updates />
       <Faq />
     </>
@@ -330,6 +331,34 @@ function Services() {
         <p className="mx-auto mt-10 max-w-3xl text-center text-sm leading-relaxed text-muted">
           Also: {otherCourses.join(' · ')}
         </p>
+        <div className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2">
+          {[
+            ['/medical#neet-calculator', 'NEET score calculator', 'Correct and wrong answers to your score out of 720'],
+            ['/engineering#cutoff', 'TNEA cutoff calculator', 'Maths, Physics and Chemistry to your cutoff out of 200'],
+          ].map(([to, title, text]) => (
+            <Link
+              key={to}
+              to={to}
+              className="group card flex items-center gap-4 p-4 transition-shadow hover:shadow-[var(--shadow-soft)]"
+            >
+              <span
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-forest-800 text-white"
+                aria-hidden="true"
+              >
+                <Calculator size={22} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-bold">{title}</span>
+                <span className="block text-sm text-muted">{text}</span>
+              </span>
+              <ArrowUpRight
+                size={18}
+                className="shrink-0 text-forest-700 transition-transform group-hover:rotate-45"
+                aria-hidden="true"
+              />
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -686,59 +715,50 @@ function EventBanner() {
   );
 }
 
-function Stars() {
-  return (
-    <span className="flex gap-0.5 text-gold" aria-label="5 out of 5 stars">
-      {Array.from({ length: 5 }, (_, i) => (
-        <Star key={i} size={14} fill="currentColor" strokeWidth={0} aria-hidden="true" />
-      ))}
-    </span>
-  );
-}
+function Voices() {
+  const { data } = useAsync(listTestimonials, []);
+  const items = data ?? [];
+  const videos = items.filter((t) => t.kind === 'video' && t.is_featured).slice(0, 3);
+  const reviews = items.filter((t) => t.kind === 'review');
+  const featured = [...reviews.filter((t) => t.is_featured), ...reviews.filter((t) => !t.is_featured)].slice(0, 6);
+  if (!featured.length && !videos.length) return null;
+  const [first, second, ...rest] = featured;
 
-function TestimonialCard({ item, large = false }) {
-  return (
-    <figure
-      className={`card flex h-full flex-col p-6 ${large ? 'sm:p-8' : ''} ${item.featured ? 'border-t-4 border-t-forest-700' : ''}`}
-    >
-      <Stars />
-      <p className="mt-3 font-bold">{item.title}</p>
-      <blockquote
-        className={`mt-2 flex-1 leading-relaxed text-muted ${large ? 'text-[1.0625rem]' : 'text-[0.9375rem]'}`}
-      >
-        “{item.quote}”
-      </blockquote>
-      <figcaption className="mt-6 flex items-center gap-3 border-t border-line pt-4">
-        <span
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-forest-100 text-sm font-bold text-forest-800"
-          aria-hidden="true"
-        >
-          {initials(item.name)}
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block leading-tight font-semibold">{item.name}</span>
-          <span className="mt-0.5 block text-xs leading-snug text-muted">{item.detail}</span>
-        </span>
-      </figcaption>
-    </figure>
-  );
-}
-
-function Testimonials() {
-  const [first, second, ...rest] = testimonials;
   return (
     <section className="py-20 sm:py-28">
       <div className="container-page">
-        <SectionHeading eyebrow="Families we’ve guided" title="Voices from" accent="our students" after="and parents" />
-        <AnimatedContent stagger={0.08} className="mt-12 grid gap-5 md:grid-cols-2">
-          <TestimonialCard item={first} large />
-          <TestimonialCard item={second} large />
-        </AnimatedContent>
-        <AnimatedContent stagger={0.08} className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {rest.map((item) => (
-            <TestimonialCard key={item.name} item={item} />
-          ))}
-        </AnimatedContent>
+        <SectionHeading
+          eyebrow="Student stories"
+          title="Voices of"
+          accent="our students"
+          text="Real stories from families we have guided through career choices and counselling, in their own words."
+        />
+        <div className="mt-6 text-center">
+          <RatingSummary items={items} />
+        </div>
+        {videos.length ? (
+          <AnimatedContent stagger={0.08}>
+            <VideoGrid items={videos} className="mt-12" />
+          </AnimatedContent>
+        ) : null}
+        {first ? (
+          <AnimatedContent stagger={0.08} className={`grid gap-5 md:grid-cols-2 ${videos.length ? 'mt-5' : 'mt-12'}`}>
+            <ReviewCard item={first} large />
+            {second ? <ReviewCard item={second} large /> : null}
+          </AnimatedContent>
+        ) : null}
+        {rest.length ? (
+          <AnimatedContent stagger={0.08} className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {rest.map((item) => (
+              <ReviewCard key={item.id} item={item} />
+            ))}
+          </AnimatedContent>
+        ) : null}
+        <div className="mt-10 text-center">
+          <ButtonLink to="/student-stories" variant="soft">
+            Read all student stories
+          </ButtonLink>
+        </div>
       </div>
     </section>
   );

@@ -11,6 +11,8 @@ const COLUMNS = [
     links: [
       ['Home', '/'],
       ['Colleges & fees', '/colleges'],
+      ['Student stories', '/student-stories'],
+      ['NEET score calculator', '/medical#neet-calculator'],
       ['About us', '/about'],
       ['Contact', '/contact'],
     ],

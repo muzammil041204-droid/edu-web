@@ -14,6 +14,25 @@ Tick items off as they're done: `- [x]`.
 
 ---
 
+## Voices of our students + NEET calculator (23 Nov 2026)
+
+You asked for a trust section with reviews and videos (managed in the admin), and a NEET mark calculator.
+
+| What | Status |
+|---|---|
+| **Voices of our students** on the home page: average rating, up to 3 featured videos, featured reviews, link to all stories | ✅ |
+| New **Student stories** page (`/student-stories`, “Stories” in the menu): all videos and reviews, filter by career guidance / medical / engineering / study abroad | ✅ |
+| Videos are **YouTube links** (normal or Shorts): thumbnail card, plays in a pop-up in YouTube’s privacy-enhanced mode, stops when closed | ✅ |
+| **Admin → Reviews & videos**: add / edit / delete, show or hide, feature on home page, order, topic; live YouTube preview while pasting; warning on videos that still need a link | ✅ |
+| **NEET score calculator** on the Medical page (`/medical#neet-calculator`): correct / wrong per subject (45 each in Physics, Chemistry, Botany, Zoology), +4 / −1, score out of 720, accuracy, a broad “what this score means” guide, and “Get a college list for this score” (opens the lead form with the score filled in) | ✅ |
+| Home “Free tools” row (NEET calculator, TNEA calculator); footer link | ✅ |
+| Database: `supabase/migrations/0002_voices_and_tools.sql` (reviews table, access rules, 9 sample reviews + 3 video slots, 2 new lead sources). Tests: **42/42** | ✅ written, **you run it in Supabase** |
+| Fixed: side panels in the admin (lead details, new editor) closed themselves straight away in development mode | ✅ |
+
+**Your steps:** Supabase → SQL Editor → run `0002_voices_and_tools.sql` once. Then in the admin, paste YouTube links into the three sample video slots (or add your own) so videos appear.
+
+---
+
 ## Change of scope (22 Nov 2026, second pass)
 
 **Your correction:** the agency is for **all students**, not only medical. Done:

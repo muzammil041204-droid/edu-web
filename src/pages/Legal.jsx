@@ -49,6 +49,12 @@ export function Privacy() {
             We don’t use advertising or tracking cookies. Your browser remembers that you have sent the form, so you
             aren’t asked again; clearing your browser data removes this.
           </p>
+          <h2>Videos</h2>
+          <p>
+            Student videos are hosted on YouTube. Until you press play, only the preview picture is loaded from
+            YouTube’s image server. The player opens in YouTube’s privacy-enhanced mode, and YouTube’s own privacy
+            policy applies to the video.
+          </p>
         </div>
       </section>
     </>

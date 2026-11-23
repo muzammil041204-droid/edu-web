@@ -1,7 +1,17 @@
 // The admin panel: sign-in, then dashboard, leads, and colleges & fees.
 // Loaded as its own bundle, only on /admin.
 
-import { BellRing, Building2, ExternalLink, LayoutDashboard, LogOut, RotateCcw, Users, X } from 'lucide-react';
+import {
+  BellRing,
+  Building2,
+  ExternalLink,
+  LayoutDashboard,
+  LogOut,
+  MessageSquareQuote,
+  RotateCcw,
+  Users,
+  X,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, Navigate, NavLink, Route, Routes } from 'react-router';
 import { Logo } from '../../components/ui.jsx';
@@ -12,6 +22,7 @@ import Dashboard from './Dashboard.jsx';
 import Leads from './Leads.jsx';
 import { LeadsProvider, useLeads } from './leadsStore.jsx';
 import Login from './Login.jsx';
+import StoriesAdmin from './StoriesAdmin.jsx';
 
 export default function AdminApp() {
   const [session, setSession] = useState(undefined); // undefined while checking
@@ -47,6 +58,7 @@ export default function AdminApp() {
           <Route path="colleges" element={<CollegesAdmin />} />
           <Route path="colleges/new" element={<CollegeEditor />} />
           <Route path="colleges/:id" element={<CollegeEditor editor={session.email} />} />
+          <Route path="stories" element={<StoriesAdmin />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>
       </Shell>
@@ -58,6 +70,7 @@ const NAV = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/leads', label: 'Leads', icon: Users },
   { to: '/admin/colleges', label: 'Colleges & fees', icon: Building2 },
+  { to: '/admin/stories', label: 'Reviews & videos', icon: MessageSquareQuote },
 ];
 
 function Shell({ session, onSignOut, children }) {

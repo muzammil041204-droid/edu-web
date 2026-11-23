@@ -6,7 +6,9 @@
 // Nothing leaves the browser.
 
 import { ACADEMIC_YEAR, colleges as seedColleges, fees as seedFees, STREAMS } from '../../data/colleges.js';
+import { sampleStories } from '../../data/content.js';
 import { buildCutoffs } from '../../data/cutoffs.js';
+import { youtubeId } from '../youtube.js';
 import { normaliseWhatsapp, validateLead } from '../validation.js';
 
 const KEY = 'arivu-demo-v2';
@@ -151,6 +153,7 @@ const fresh = () => ({
     ...fee,
   })),
   leads: sampleLeads(),
+  testimonials: seedStories(),
 });
 
 function load() {
@@ -175,8 +178,30 @@ function save(db) {
 }
 
 // Make sure a first visit writes the sample data, so other tabs share it.
+const seedStories = () =>
+  sampleStories.map((story, i) => ({
+    id: crypto.randomUUID(),
+    created_at: '2026-11-01T09:00:00+05:30',
+    updated_at: '2026-11-01T09:00:00+05:30',
+    detail: '',
+    title: '',
+    quote: '',
+    rating: null,
+    video_url: '',
+    stream: 'general',
+    is_featured: false,
+    is_published: true,
+    sort_order: i + 1,
+    ...story,
+  }));
+
 function db() {
   const data = load();
+  // Demo data saved before reviews & videos existed: add the samples once.
+  if (!data.testimonials) {
+    data.testimonials = seedStories();
+    save(data);
+  }
   try {
     if (!window.localStorage.getItem(KEY)) window.localStorage.setItem(KEY, JSON.stringify(data));
   } catch {
@@ -362,6 +387,46 @@ export async function saveFees(collegeId, academicYear, rows, { course, editor }
   data.fees = [...keep, ...next];
   save(data);
   return next;
+}
+
+// ---------------------------------------------------------------- reviews & videos
+
+const byOrder = (a, b) => a.sort_order - b.sort_order || b.created_at.localeCompare(a.created_at);
+
+// Public: published reviews, and videos that have a working YouTube link.
+export async function listTestimonials() {
+  await wait(120);
+  return db()
+    .testimonials.filter((t) => t.is_published && (t.kind === 'review' || youtubeId(t.video_url)))
+    .sort(byOrder);
+}
+
+export async function adminListTestimonials() {
+  await wait(120);
+  return db().testimonials.slice().sort(byOrder);
+}
+
+export async function saveTestimonial(input) {
+  await wait(250);
+  const data = db();
+  const now = new Date().toISOString();
+  if (input.id) {
+    const story = data.testimonials.find((t) => t.id === input.id);
+    if (!story) throw new Error('This item no longer exists.');
+    Object.assign(story, input, { updated_at: now });
+    save(data);
+    return story;
+  }
+  const story = { ...input, id: crypto.randomUUID(), created_at: now, updated_at: now };
+  data.testimonials.push(story);
+  save(data);
+  return story;
+}
+
+export async function deleteTestimonial(id) {
+  const data = db();
+  data.testimonials = data.testimonials.filter((t) => t.id !== id);
+  save(data);
 }
 
 export function resetDemo() {

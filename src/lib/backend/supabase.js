@@ -9,6 +9,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { ACADEMIC_YEAR } from '../../data/colleges.js';
 import { normaliseWhatsapp } from '../validation.js';
+import { youtubeId } from '../youtube.js';
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true },
@@ -182,6 +183,52 @@ export async function saveFees(collegeId, academicYear, rows, { course = 'MBBS' 
     .select(FEE_FIELDS);
   fail(error, 'Could not save the fees.');
   return data;
+}
+
+// ---------------------------------------------------------------- reviews & videos
+
+const STORY_FIELDS =
+  'id, kind, name, detail, title, quote, rating, video_url, stream, is_featured, is_published, sort_order, created_at, updated_at';
+
+// Public: published items. Videos without a working YouTube link are left out.
+export async function listTestimonials() {
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select(STORY_FIELDS)
+    .eq('is_published', true)
+    .order('sort_order')
+    .order('created_at', { ascending: false });
+  if (error) {
+    // Table not created yet (migration 0002 not run): show no section rather than an error.
+    if (error.code === '42P01' || error.code === 'PGRST205') return [];
+    fail(error, 'Could not load reviews.');
+  }
+  return data.filter((t) => t.kind === 'review' || youtubeId(t.video_url));
+}
+
+export async function adminListTestimonials() {
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select(STORY_FIELDS)
+    .order('sort_order')
+    .order('created_at', { ascending: false });
+  fail(error, 'Could not load reviews and videos. Has supabase/migrations/0002 been run?');
+  return data;
+}
+
+export async function saveTestimonial(input) {
+  const { id, created_at: _c, updated_at: _u, ...fields } = input;
+  const query = id
+    ? supabase.from('testimonials').update(fields).eq('id', id)
+    : supabase.from('testimonials').insert(fields);
+  const { data, error } = await query.select(STORY_FIELDS).single();
+  fail(error, 'Could not save this item.');
+  return data;
+}
+
+export async function deleteTestimonial(id) {
+  const { error } = await supabase.from('testimonials').delete().eq('id', id);
+  fail(error, 'Could not delete this item.');
 }
 
 export function resetDemo() {}
